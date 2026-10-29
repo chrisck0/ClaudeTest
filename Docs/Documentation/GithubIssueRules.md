@@ -1,6 +1,6 @@
-# Github Issues 작성 규칙
+# Github Issue 작성 규칙
 
-> Github Issues를 작성할 때의 규칙.
+> Github Issue를 작성할 때의 규칙.
 >
 > 이슈 작성 양식은 `@Docs\Template\IssueTemplate.md` 를 참고.
 >
