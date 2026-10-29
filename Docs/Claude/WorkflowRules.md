@@ -22,6 +22,11 @@ flowchart TD
     Commit --> PR[PR]
     PR --> Merge[병합, 브랜치 파기]
     Merge --> Close[Issue Close]
+
+    IssueNote["이슈로 등록할 필요가 있다고 판단하는 경우 사용자에게 작성 권유함<br/><br/>실질적인 작성은 Claude가 수행"] -.-> Issue
+    BriefNote["기존의 기능을 수정하거나 연관된 기능을 개발하는 경우,<br/>기존에 작성된 기술 문서와 다이어그램을<br/>검토한 후 작업계획을 수립한다."] -.-> Brief
+    classDef note stroke:#999,stroke-dasharray: 4 3
+    class IssueNote,BriefNote note
 ```
 
 | 단계 | 수행 주체 | 결과물 |
@@ -63,23 +68,16 @@ flowchart TD
 - 등록이 필요하다고 판단하면, 사용자에게 Issue 작성을 권유한다.
   - 사용자가 승인하면, 실질적인 작성은 Claude가 수행한다.
   - 사용자가 거절하면, Issue 없이 `3. 브리핑`으로 넘어가고 `10. Issue Close` 단계는 생략한다.
-- Issue 작성 양식과 섹션별 규칙은 아래 문서를 따른다.
+- Issue 권유, 작성, 등록은 `/github-issue` 스킬(`.claude\skills\github-issue\SKILL.md`)을 호출해 수행한다. 멘트 규격도 스킬을 따른다.
   - 양식 : `Docs\Template\IssueTemplate.md`
-  - 작성 규칙 : `Docs\Documentation\GithubIssueRule`
+  - 작성 규칙 : `Docs\Documentation\GithubIssueRules.md`
 - 사용자가 Issue 생성을 하지 않도록 명시한 경우(예 : 작업지시서에 기재된 경우), 권유하지 않는다.
 - 등록된 Issue 번호는 이후 브리핑, PR 단계에서 참조하므로 사용자에게 알린다.
 - 이슈에 착수할 경우, 해당 이슈의 Assignees를 사용자로 지정한다.
-- 예시 :
-    ```markdown
-    해당 작업은 기존 기능에 영향을 주는 수정이므로 Issue 등록을 권장합니다.
+존 기능에 영향을 주는 수정이므로 Issue 등록을 권장합니다.
     Issue를 작성할까요?
     ```
-
----
-
-## 3. 브리핑
-
-- 브리핑의 형식과 승인 절차는 `Docs\Claude\ClaudeCodeRules.md`의 `기능 구현 착수 규칙`을 따른다.
+능 구현 착수 규칙`을 따른다.
 - 승인을 받기 전에는 어떤 파일도 생성, 수정, 삭제하지 않는다.
 - 문서 작성 명령도 새 문서 작성, 구조 변경 등 단순 수정이 아닌 경우 브리핑한다.
 
