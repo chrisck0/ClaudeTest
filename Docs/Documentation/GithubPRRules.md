@@ -2,7 +2,7 @@
 
 > Github PR를 작성할 때의 규칙.
 >
-> 이슈 작성 양식은 `@Docs\Template\PRTemplate.md` 를 참고.
+> PR 작성 양식은 `@Docs\Template\PRTemplate.md` 를 참고.
 >
 > 해당 문서는 각 섹션에 대한 작성 규칙을 정의한다.
 
@@ -48,7 +48,7 @@
 - PR과 연관된 이슈의 `5. 완료조건 (DoD)` 체크리스트를 그대로 적으며, 체크리스트를 통과하는지를 확인한다. 통과한다면 [x]로 표시한다.
 - 예시 :
     ```markdown
-    ## 완료조건 (DoD)
+    ## 확인사항
 
     - [x] `PlayerController` 객체와 `MonsterController` 객체가 `IDamageable` 인터페이스를 통해서만 데미지 판정을 주고받는다.
     - [x] `IDamageable.TakeDamage(DamageInfo info)` 메서드를 통해 공격을 시도한 객체에서 공격을 받는 객체로 `DamageInfo` 구조체가 전달된다.

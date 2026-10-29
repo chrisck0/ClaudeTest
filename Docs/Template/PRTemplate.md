@@ -1,8 +1,8 @@
 # PR Template
 
-> Github Pull requests에 등록할 Issue의 양식.
+> Github Pull requests에 등록할 PR의 양식.
 >
-> 사용자의 명시적인 명령 외에는 해당 양식을 기반으로 이슈를 작성한다. 
+> 사용자의 명시적인 명령 외에는 해당 양식을 기반으로 PR을 작성한다. 
 
 ```markdown
 # [Title]
