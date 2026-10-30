@@ -69,16 +69,12 @@ flowchart TD
   - 사용자가 승인하면, 실질적인 작성은 Claude가 수행한다.
   - 사용자가 거절하면, Issue 없이 `3. 브리핑`으로 넘어가고 `10. Issue Close` 단계는 생략한다.
 - Issue 권유, 작성, 등록은 `/github-issue` 스킬(`.claude\skills\github-issue\SKILL.md`)을 호출해 수행한다. 멘트 규격도 스킬을 따른다.
+  - 권유 멘트 : 스킬의 `멘트 규격` > `1. 권유 멘트`
   - 양식 : `Docs\Template\IssueTemplate.md`
   - 작성 규칙 : `Docs\Documentation\GithubIssueRules.md`
 - 사용자가 Issue 생성을 하지 않도록 명시한 경우(예 : 작업지시서에 기재된 경우), 권유하지 않는다.
 - 등록된 Issue 번호는 이후 브리핑, PR 단계에서 참조하므로 사용자에게 알린다.
 - 이슈에 착수할 경우, 해당 이슈의 Assignees를 사용자로 지정한다.
-- 예시 :
-    ```markdown
-    해당 작업은 기존 기능에 영향을 주는 수정이므로 Issue 등록을 권장합니다.
-    Issue를 작성할까요?
-    ```
 
 ---
 
@@ -205,7 +201,7 @@ flowchart TD
 - 작성 양식은 `Docs\Template\PRTemplate.md`를 따른다.
 - 이슈 기반 업무인 경우, 관련 Issue는 `#번호` 태그로만 연결하고 `Closes` 등 자동 Close 키워드는 사용하지 않는다.
 - 병합 대상 브랜치는 사용자에게 확인한다.
-- `확인 사항` 체크리스트는 실제로 확인된 항목만 체크한다. 확인하지 못한 항목은 체크하지 않고 `특이사항`에 사유를 기재한다.
+- `확인사항` 작성 규칙은 `Docs\Documentation\GithubPRRules.md`의 `4. 확인사항`을 따른다.
 
 ---
 
