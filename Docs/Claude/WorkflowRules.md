@@ -22,6 +22,11 @@ flowchart TD
     Commit --> PR[PR]
     PR --> Merge[병합, 브랜치 파기]
     Merge --> Close[Issue Close]
+
+    IssueNote["이슈로 등록할 필요가 있다고 판단하는 경우 사용자에게 작성 권유함<br/><br/>실질적인 작성은 Claude가 수행"] -.-> Issue
+    BriefNote["기존의 기능을 수정하거나 연관된 기능을 개발하는 경우,<br/>기존에 작성된 기술 문서와 다이어그램을<br/>검토한 후 작업계획을 수립한다."] -.-> Brief
+    classDef note stroke:#999,stroke-dasharray: 4 3
+    class IssueNote,BriefNote note
 ```
 
 | 단계 | 수행 주체 | 결과물 |
@@ -35,7 +40,7 @@ flowchart TD
 | 7. Commit / Push | 사용자 | 원격 브랜치에 반영된 Commit |
 | 8. PR | Claude | 등록된 PR |
 | 9. 병합, 브랜치 파기 | 사용자 | 병합된 대상 브랜치 |
-| 10. Issue Close | 사용자 (PR 연동 시 자동) | 닫힌 Issue |
+| 10. Issue Close | 사용자 | 닫힌 Issue |
 
 - Git 관련 작업(브랜치 개설, Commit, Push, 병합, 브랜치 파기)은 Claude가 수행하지 않고, 사용자가 직접 수행한다. Claude는 수행 시점과 확인 사항만 안내한다.
 - 각 단계는 이전 단계가 완료된 후에만 진행한다. 단계를 건너뛰어야 하는 경우, 사용자에게 사유를 알리고 승인을 받는다.
@@ -63,17 +68,13 @@ flowchart TD
 - 등록이 필요하다고 판단하면, 사용자에게 Issue 작성을 권유한다.
   - 사용자가 승인하면, 실질적인 작성은 Claude가 수행한다.
   - 사용자가 거절하면, Issue 없이 `3. 브리핑`으로 넘어가고 `10. Issue Close` 단계는 생략한다.
-- Issue 작성 양식과 섹션별 규칙은 아래 문서를 따른다.
+- Issue 권유, 작성, 등록은 `/github-issue` 스킬(`.claude\skills\github-issue\SKILL.md`)을 호출해 수행한다. 멘트 규격도 스킬을 따른다.
+  - 권유 멘트 : 스킬의 `멘트 규격` > `1. 권유 멘트`
   - 양식 : `Docs\Template\IssueTemplate.md`
-  - 작성 규칙 : `Docs\Documentation\GithubIssueRule`
+  - 작성 규칙 : `Docs\Documentation\GithubIssueRules.md`
 - 사용자가 Issue 생성을 하지 않도록 명시한 경우(예 : 작업지시서에 기재된 경우), 권유하지 않는다.
 - 등록된 Issue 번호는 이후 브리핑, PR 단계에서 참조하므로 사용자에게 알린다.
 - 이슈에 착수할 경우, 해당 이슈의 Assignees를 사용자로 지정한다.
-- 예시 :
-    ```markdown
-    해당 작업은 기존 기능에 영향을 주는 수정이므로 Issue 등록을 권장합니다.
-    Issue를 작성할까요?
-    ```
 
 ---
 
@@ -196,10 +197,11 @@ flowchart TD
 ## 8. PR
 
 - PR 작성 내용을 사용자에게 먼저 보여주고, 승인을 받은 후 등록한다.
+- PR 권유, 작성, 등록은 `/github-pr` 스킬(`.claude\skills\github-pr\SKILL.md`)을 호출해 수행한다. 멘트 규격도 스킬을 따른다.
 - 작성 양식은 `Docs\Template\PRTemplate.md`를 따른다.
-- 이슈 기반 업무인 경우, PR이 승인되어 머지될 때 `Closes #00`를 사용해 관련 이슈를 Closed 처리한다.
+- 이슈 기반 업무인 경우, 관련 Issue는 `#번호` 태그로만 연결하고 `Closes` 등 자동 Close 키워드는 사용하지 않는다.
 - 병합 대상 브랜치는 사용자에게 확인한다.
-- `확인 사항` 체크리스트는 실제로 확인된 항목만 체크한다. 확인하지 못한 항목은 체크하지 않고 `특이사항`에 사유를 기재한다.
+- `확인사항` 작성 규칙은 `Docs\Documentation\GithubPRRules.md`의 `4. 확인사항`을 따른다.
 
 ---
 
@@ -212,6 +214,6 @@ flowchart TD
 
 ## 10. Issue Close
 
-- PR에 `Closes #번호`가 기재되었다면, 병합 시 Issue가 자동으로 닫힌다.
-- 자동으로 닫히지 않은 경우, 이슈의 `완료조건 (DoD)` 체크 상태를 확인한 후 사용자의 승인을 받고 Close한다.
+- PR 병합으로 Issue를 자동 Close하지 않는다.
+- 병합 후 이슈의 `완료조건 (DoD)` 체크 상태를 확인한 후 사용자의 승인을 받고 Close한다.
 - Issue가 닫히면 해당 업무를 완료 처리한다.
