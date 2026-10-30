@@ -34,5 +34,9 @@
 
 ### Github Issue 관련
 
-`@Docs\Documentation\GithubIssueRule.md`
+Issue 권유/작성/등록은 `/github-issue` 스킬을 호출해 수행한다. (작성 규칙 원본 : `Docs\Documentation\GithubIssueRules.md`)
+
+### Github PR 관련
+
+PR 권유/작성/등록은 `/github-pr` 스킬을 호출해 수행한다. (작성 규칙 원본 : `Docs\Documentation\GithubPRRules.md`)
 
