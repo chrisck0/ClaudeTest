@@ -2,62 +2,66 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// Move 입력을 받아 플레이어를 XZ 평면에서 이동시키고, Jump 입력을 받아 지상에서 점프시킨다.
+/// 좌우 이동 입력으로 플레이어를 이동시키고, 마지막으로 이동한 방향을 바라보는 방향으로 기억한다.
 /// </summary>
+[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private InputActionReference _moveInput;
-    [SerializeField] private InputActionReference _jumpInput;
     [SerializeField] private float _moveSpeed = 5f;
-    [SerializeField] private float _jumpForce = 5f;
-    [SerializeField] private float _groundCheckDistance = 1.1f; // 오브젝트 중심에서 발밑까지의 거리 + 여유값
 
-    private Rigidbody _rigidbody;
+    private Rigidbody2D _rigidbody;
+    private PlayerDash _dash;
+    private float _moveDirection;
+
+    /// <summary>
+    /// 플레이어가 바라보는 방향 (오른쪽 1, 왼쪽 -1)
+    /// </summary>
+    public float FacingDirection { get; private set; } = 1f;
 
     private void Awake() => CacheComponents();
     private void OnEnable() => BindInputActions();
     private void OnDisable() => UnbindInputActions();
-    private void Update() => Move();
+    private void FixedUpdate() => Move();
+
+    private void OnMove(InputAction.CallbackContext context)
+    {
+        _moveDirection = context.ReadValue<float>();
+
+        if (_moveDirection != 0f)
+        {
+            FacingDirection = Mathf.Sign(_moveDirection);
+        }
+    }
 
     private void Move()
     {
-        Vector2 input = _moveInput.action.ReadValue<Vector2>();
-        Vector3 direction = new Vector3(input.x, 0f, input.y);
-
-        transform.Translate(direction * _moveSpeed * Time.deltaTime, Space.World);
-    }
-
-    private void OnJump(InputAction.CallbackContext context)
-    {
-        if (!IsGrounded())
+        // 대시 중에는 대시가 속도를 제어하므로 이동 입력을 무시함
+        if (_dash != null && _dash.IsDashing)
         {
             return;
         }
 
-        _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
-    }
-
-    private bool IsGrounded()
-    {
-        return Physics.Raycast(transform.position, Vector3.down, _groundCheckDistance);
+        _rigidbody.linearVelocity = new Vector2(_moveDirection * _moveSpeed, _rigidbody.linearVelocity.y);
     }
 
     private void CacheComponents()
     {
-        _rigidbody = GetComponent<Rigidbody>();
+        _rigidbody = GetComponent<Rigidbody2D>();
+        _dash = GetComponent<PlayerDash>();
     }
 
     private void BindInputActions()
     {
         _moveInput.action.Enable();
-        _jumpInput.action.Enable();
-        _jumpInput.action.performed += OnJump;
+        _moveInput.action.performed += OnMove;
+        _moveInput.action.canceled += OnMove;
     }
 
     private void UnbindInputActions()
     {
         _moveInput.action.Disable();
-        _jumpInput.action.Disable();
-        _jumpInput.action.performed -= OnJump;
+        _moveInput.action.performed -= OnMove;
+        _moveInput.action.canceled -= OnMove;
     }
 }
