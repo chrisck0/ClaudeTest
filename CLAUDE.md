@@ -25,6 +25,7 @@
 @Docs\Claude\ClaudeCodeRules.md
 @Docs\Claude\WorkflowRules.md
 @Docs\TechSpec.md
+@Docs\Claude\McpRules.md
 
 ## 온디맨드 참조 (매 세션 읽지 않음 - 해당 작업을 할 때만 읽음)
 

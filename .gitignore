@@ -109,3 +109,6 @@ InitTestScene*.unity*
 
 # Workspace xml
 /.idea/
+
+# MCP
+/.mcp.json
