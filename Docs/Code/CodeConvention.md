@@ -74,7 +74,8 @@ public class ChunkManager : MonoBehaviour
 - 접근제한자를 생략하지 않고 반드시 적는다.
 - 접근제한자는 기본적으로 `private`으로 두며, 필요하면 `public` 또는 `protected` 등 다른 접근제한자를 사용한다.
 - InputActionReference, Button, Delegate 등은 `BindXxx`, `UnbindXxx`처럼 필요한 단위를 묶어서 적는다.
-- 인스펙터에 노출시키기 위해서 `private` 또는 `protected`를 `public`으로 변경하지 않는다. `privated`, `protected` 멤버를 인스펙터에 보이게 만들고 싶다면 접근제한자를 변경하지 않고 `[SerializeField]`를 사용한다.
+- 인스펙터에 노출시키기 위해서 `private` 또는 `protected`를 `public`으로 변경하지 않는다. `private`, `protected` 멤버를 인스펙터에 보이게 만들고 싶다면 접근제한자를 변경하지 않고 `[SerializeField]`를 사용한다.
+- 자식 오브젝트의 스크립트가 부모(루트) 오브젝트의 컴포넌트(Rigidbody2D 등)를 참조할 때는 `[SerializeField]` 필드로 선언하고, Inspector에서 드래그해서 연결한다.
 
 #### 예시
 ```csharp
