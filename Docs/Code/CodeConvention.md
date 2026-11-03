@@ -33,6 +33,7 @@ float padding = 0.5f / _textureSize; // Mipmap(texture) bleeding(Texture atlas �
 
 ### XML 주석
 `public` 멤버에는 반드시 XML 주석 (`///`)를 사용하여 주석을 단다.
+단, `GetHealth()`, `SetHealth()`처럼 이름만으로 역할이 명확한 멤버에는 XML 주석을 달지 않는다.
 
 #### 예시
 ```csharp
@@ -80,8 +81,19 @@ public class ChunkManager : MonoBehaviour
 - 접근제한자를 생략하지 않고 반드시 적는다.
 - 접근제한자는 기본적으로 `private`으로 두며, 필요하면 `public` 또는 `protected` 등 다른 접근제한자를 사용한다.
 - InputActionReference, Button, Delegate 등은 `BindXxx`, `UnbindXxx`처럼 필요한 단위를 묶어서 적는다.
-- 인스펙터에 노출시키기 위해서 `private` 또는 `protected`를 `public`으로 변경하지 않는다. `private`, `protected` 멤버를 인스펙터에 보이게 만들고 싶다면 접근제한자를 변경하지 않고 `[SerializeField]`를 사용한다.
+- public 필드는 사용하지 않는다. 외부에 값을 공개할 때는 private 필드를 선언하고, 그 필드를 반환하는 읽기 전용 프로퍼티를 `=>`로 작성한다.
+  ```csharp
+  private int _health;
+
+  public int Health => _health;
+  ```- 인스펙터에 노출시키기 위해서 `private` 또는 `protected`를 `public`으로 변경하지 않는다. `private`, `protected` 멤버를 인스펙터에 보이게 만들고 싶다면 접근제한자를 변경하지 않고 `[SerializeField]`를 사용한다.
 - 자식 오브젝트의 스크립트가 부모(루트) 오브젝트의 컴포넌트(Rigidbody2D 등)를 참조할 때는 `[SerializeField]` 필드로 선언하고, Inspector에서 드래그해서 연결한다.
+- 게임 밸런스 값(체력, 속도, 지속 시간 등)은 `[SerializeField]` 필드로 선언하고, 바뀌지 않는 값(씬 이름, 애니메이터 파라미터 이름 등)은 `const`로 선언한다. 단, 사용자가 `const`로 선언하도록 명시한 값은 `const`로 선언하고, Claude가 선언한 줄 끝에 `// 사용자 지정 const` 주석을 단다.
+  ```csharp
+  private const string STAGE_SELECT_SCENE = "StageSelectScene";    // 바뀌지 않는 값
+  private const int MAX_LIVES = 3; // 사용자 지정 const
+  [SerializeField] private int _maxHealth = 3;                      // 게임 밸런스 값
+  ```
 
 #### 예시
 ```csharp
@@ -166,11 +178,11 @@ public class TouchMobile : MonoBehaviour
 
 | 순서 | 멤버 | 예시 |
 | --- | --- | --- |
-| 1 | Singleton 인스턴스 (Singleton 패턴일 때만) | `public static GameManager Instance;` |
+| 1 | Singleton 인스턴스 (Singleton 패턴일 때만) | `private static GameManager _instance;`<br>`public static GameManager Instance => _instance;` |
 | 2 | 상수 | `private const int MAX_HEALTH = 3;` |
 | 3 | `[SerializeField]` 필드 | `[SerializeField] private float _moveSpeed;` |
 | 4 | private 필드 | `private Rigidbody2D _rigidbody;` |
-| 5 | public 프로퍼티 | `public int CurrentHealth { get; private set; }` |
+| 5 | public 프로퍼티 | `public int Health => _health;` |
 | 6 | 이벤트 | `public event Action Died;` |
 | 7 | Unity 이벤트 함수 | `Awake()`, `OnEnable()` |
 | 8 | 그 밖의 메서드 | `TakeDamage()`, `Move()` |
