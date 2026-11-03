@@ -115,26 +115,6 @@ public class TouchMobile : MonoBehaviour
         UnbindPlayerEvents();
     }
 
-    private void OnPress(InputAction.CallbackContext context)
-    {
-        Pressed?.Invoke();
-    }
-
-    private void OnRelease(InputAction.CallbackContext context)
-    {
-        Released?.Invoke();
-    }
-
-    private void OnDied()
-    {
-        enabled = false; // 사망 후에는 터치 입력을 받지 않도록 비활성화함
-    }
-
-    private void CacheComponents()
-    {
-        _player = GetComponent<Player>();
-    }
-
     private void BindInputActions()
     {
         _pressInput.action.Enable();
@@ -158,5 +138,45 @@ public class TouchMobile : MonoBehaviour
     {
         _player.Died -= OnDied;
     }
+
+    private void OnPress(InputAction.CallbackContext context)
+    {
+        Pressed?.Invoke();
+    }
+
+    private void OnRelease(InputAction.CallbackContext context)
+    {
+        Released?.Invoke();
+    }
+
+    private void OnDied()
+    {
+        enabled = false; // 사망 후에는 터치 입력을 받지 않도록 비활성화함
+    }
+
+    private void CacheComponents()
+    {
+        _player = GetComponent<Player>();
+    }
 }
 ```
+
+## 4. 멤버 선언 순서
+클래스 안의 멤버는 아래 순서로 선언한다. 해당하는 멤버가 없는 항목은 건너뛴다.
+
+| 순서 | 멤버 | 예시 |
+| --- | --- | --- |
+| 1 | Singleton 인스턴스 (Singleton 패턴일 때만) | `public static GameManager Instance;` |
+| 2 | 상수 | `private const int MAX_HEALTH = 3;` |
+| 3 | `[SerializeField]` 필드 | `[SerializeField] private float _moveSpeed;` |
+| 4 | private 필드 | `private Rigidbody2D _rigidbody;` |
+| 5 | public 프로퍼티 | `public int CurrentHealth { get; private set; }` |
+| 6 | 이벤트 | `public event Action Died;` |
+| 7 | Unity 이벤트 함수 | `Awake()`, `OnEnable()` |
+| 8 | 그 밖의 메서드 | `TakeDamage()`, `Move()` |
+| 9 | `BindXxx()`/`UnbindXxx()` → 이벤트 핸들러 → `CacheComponents()` → `Init()` | `BindInputActions()`, `OnDied()`, `CacheComponents()` |
+
+- Unity 이벤트 함수는 실행 순서대로 선언한다. (`Awake` → `OnEnable` → `Start` → `FixedUpdate` → `Update` → `LateUpdate` → `OnDisable` → `OnDestroy`)
+- 그 밖의 메서드는 public, private 등 접근제한자에 따라 순서를 나누지 않는다.
+- `BindXxx()`, `UnbindXxx()`는 이벤트를 연결하는 메서드이므로 9번에 둔다.
+- 순서 적용 예시는 `3. 코드 스타일`의 예시 코드를 참고한다.
