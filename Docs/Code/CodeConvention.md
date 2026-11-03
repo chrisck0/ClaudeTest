@@ -11,6 +11,11 @@
 | private 멤버 | _camelCase | `_currentHealth` |
 | 상수 | 대문자, 단어 사이 밑줄 | `MAX_LEVEL`|
 | 인터페이스 | I + PascalCase | `IInteractable` |
+| 이벤트 | PascalCase, 동사 과거형 (`On` 접두사를 붙이지 않음) | `Died`, `HealthChanged` |
+| 이벤트 핸들러 | On + 이벤트 이름 | `OnDied`, `OnHealthChanged` |
+
+- 이벤트 핸들러는 이벤트를 구독해 호출되는 메서드를 말한다.
+- InputAction의 `performed`처럼 이벤트 이름만으로 구분되지 않는 외부 이벤트는 On + 동작 이름으로 짓는다. (예 : `OnJump`, `OnDash`)
 
 
 ## 2. 주석
@@ -70,7 +75,8 @@ public class ChunkManager : MonoBehaviour
 
 ## 3. 코드 스타일
 
-- Unity 이벤트 함수에는 아래 예시와 같이 람다 식을 사용하여 한 줄로 작성한다.
+- Unity 이벤트 함수에서 호출할 메서드가 하나면 아래 예시의 `Awake()`와 같이 람다 식을 사용하여 한 줄로 작성한다.
+- 호출할 메서드가 여러 개면 아래 예시의 `OnEnable()`, `OnDisable()`과 같이 블록으로 작성하고, 블록 안에는 메서드 호출만 적는다.
 - 접근제한자를 생략하지 않고 반드시 적는다.
 - 접근제한자는 기본적으로 `private`으로 두며, 필요하면 `public` 또는 `protected` 등 다른 접근제한자를 사용한다.
 - InputActionReference, Button, Delegate 등은 `BindXxx`, `UnbindXxx`처럼 필요한 단위를 묶어서 적는다.
@@ -82,21 +88,46 @@ public class ChunkManager : MonoBehaviour
 public class TouchMobile : MonoBehaviour
 {
     [SerializeField] private InputActionReference _pressInput;
-    
+
     private Player _player;
 
-    private void Awake() => CacheComponents();
-    private void OnEnable() => BindInputActions();
-    private void OnDisable() => UnbindInputActions();
+    /// <summary>
+    /// 화면을 눌렀을 때 발생하는 이벤트
+    /// </summary>
+    public event Action Pressed;
 
-    private void OnTouch(InputAction.CallbackContext context)
+    /// <summary>
+    /// 화면에서 손을 뗐을 때 발생하는 이벤트
+    /// </summary>
+    public event Action Released;
+
+    private void Awake() => CacheComponents();
+
+    private void OnEnable()
     {
-        Debug.Log("OnTouch");
+        BindInputActions();
+        BindPlayerEvents();
     }
 
-    private void OnUntouched(InputAction.CallbackContext context)
+    private void OnDisable()
     {
-        Debug.Log("OnUntouched");
+        UnbindInputActions();
+        UnbindPlayerEvents();
+    }
+
+    private void OnPress(InputAction.CallbackContext context)
+    {
+        Pressed?.Invoke();
+    }
+
+    private void OnRelease(InputAction.CallbackContext context)
+    {
+        Released?.Invoke();
+    }
+
+    private void OnDied()
+    {
+        enabled = false; // 사망 후에는 터치 입력을 받지 않도록 비활성화함
     }
 
     private void CacheComponents()
@@ -107,15 +138,25 @@ public class TouchMobile : MonoBehaviour
     private void BindInputActions()
     {
         _pressInput.action.Enable();
-        _pressInput.action.performed += OnTouch;
-        _pressInput.action.canceled += OnUntouched;
+        _pressInput.action.performed += OnPress;
+        _pressInput.action.canceled += OnRelease;
     }
 
     private void UnbindInputActions()
     {
         _pressInput.action.Disable();
-        _pressInput.action.performed -= OnTouch;
-        _pressInput.action.canceled -= OnUntouched;
+        _pressInput.action.performed -= OnPress;
+        _pressInput.action.canceled -= OnRelease;
+    }
+
+    private void BindPlayerEvents()
+    {
+        _player.Died += OnDied;
+    }
+
+    private void UnbindPlayerEvents()
+    {
+        _player.Died -= OnDied;
     }
 }
 ```

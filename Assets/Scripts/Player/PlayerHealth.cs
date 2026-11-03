@@ -20,7 +20,7 @@ public class PlayerHealth : MonoBehaviour
     /// <summary>
     /// HP가 0이 되어 사망했을 때 발생하는 이벤트
     /// </summary>
-    public event Action OnDied;
+    public event Action Died;
 
     private void Awake() => CurrentHealth = MAX_HEALTH;
 
@@ -45,7 +45,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
-        OnDied?.Invoke();
+        Died?.Invoke();
         gameObject.SetActive(false);
     }
 }
