@@ -15,6 +15,18 @@
 | 이벤트 핸들러 | On + 이벤트 이름 | `OnDied`, `OnHealthChanged` |
 
 - 이벤트 핸들러는 이벤트를 구독해 호출되는 메서드를 말한다.
+
+### bool 이름
+bool 타입의 필드, 프로퍼티, 지역 변수와 bool을 반환하는 메서드는 `Is`, `Has`, `Can` 중 하나로 시작한다. 대소문자는 위 표의 대상별 표기법을 따른다.
+
+| 접두사 | 의미 | 예시 |
+| --- | --- | --- |
+| Is | 상태 | `IsDashing`, `_isDashing`, `IsGrounded()` |
+| Has | 소유 | `HasKey`, `hasTarget` |
+| Can | 가능 여부 | `CanJump()`, `_canDash` |
+
+- 부정형 이름(`IsNotGrounded`, `CannotJump`)은 사용하지 않는다.
+- 단, `Un`이 붙어 하나의 단어로 쓰이는 형용사는 허용한다. (예 : `IsUnlocked`)
 - InputAction의 `performed`처럼 이벤트 이름만으로 구분되지 않는 외부 이벤트는 On + 동작 이름으로 짓는다. (예 : `OnJump`, `OnDash`)
 
 
@@ -81,6 +93,20 @@ public class ChunkManager : MonoBehaviour
 - 접근제한자를 생략하지 않고 반드시 적는다.
 - 접근제한자는 기본적으로 `private`으로 두며, 필요하면 `public` 또는 `protected` 등 다른 접근제한자를 사용한다.
 - InputActionReference, Button, Delegate 등은 `BindXxx`, `UnbindXxx`처럼 필요한 단위를 묶어서 적는다.
+- 중괄호는 새 줄에서 연다.
+- `if`, `for`, `while` 등의 실행할 문장이 한 줄이어도 중괄호를 생략하지 않는다.
+- 조건을 만족하지 않으면 실행하지 않는 경우, 조건문을 중첩하지 않고 먼저 `return`으로 빠져나간다. (early return)
+  ```csharp
+  public void TakeDamage()
+  {
+      if (_health <= 0)
+      {
+          return;
+      }
+
+      _health--;
+  }
+  ```
 - public 필드는 사용하지 않는다. 외부에 값을 공개할 때는 private 필드를 선언하고, 그 필드를 반환하는 읽기 전용 프로퍼티를 `=>`로 작성한다.
   ```csharp
   private int _health;
@@ -192,3 +218,41 @@ public class TouchMobile : MonoBehaviour
 - 그 밖의 메서드는 public, private 등 접근제한자에 따라 순서를 나누지 않는다.
 - `BindXxx()`, `UnbindXxx()`는 이벤트를 연결하는 메서드이므로 9번에 둔다.
 - 순서 적용 예시는 `3. 코드 스타일`의 예시 코드를 참고한다.
+
+## 5. enum
+- enum 하나는 파일 하나에 선언하고, 파일 이름은 enum 이름과 같게 한다.
+- 일반 enum은 단수형, `[Flags]` enum은 복수형으로 이름을 짓는다. (예 : `BlockType`, `Directions`)
+- 멤버에 값을 직접 적지 않는다.
+- 값을 지정하지 않은 상태를 나타낼 필요가 있을 때만 첫 번째 멤버로 `None`을 둔다.
+- enum과 멤버의 XML 주석은 이름만으로 의미가 명확하지 않을 때만 단다.
+
+#### 예시
+```csharp
+/// <summary>
+/// 스테이지를 구성하는 블록의 종류
+/// </summary>
+public enum BlockType
+{
+    None,
+    Ground,
+
+    /// <summary>
+    /// 아래에서 위로는 통과할 수 있고, 위에서 아래로는 통과할 수 없는 반바닥
+    /// </summary>
+    SemiGround,
+
+    Spike
+}
+```
+
+## 6. 스크립트 폴더
+- 스크립트는 `Assets/Scripts/` 바로 아래에 두지 않고, 그 아래의 시스템 폴더 안에 둔다.
+- 시스템 폴더는 아래 기준으로 고른다.
+
+| 폴더 | 들어가는 스크립트 | 예시 |
+| --- | --- | --- |
+| `Core/` | 게임 전체의 흐름과 상태를 관리하는 스크립트 | `GameManager` |
+| `Common/` | 여러 시스템이 함께 사용하는 스크립트 | |
+| 기능별 폴더 | 하나의 기능 단위에 속하는 스크립트 | `Player/`, `Stage/`, `UI/` |
+
+- 어느 폴더에 넣을지 애매한 스크립트는 임의로 배치하지 않고, 브리핑에서 사용자에게 질문한다.

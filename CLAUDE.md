@@ -37,6 +37,12 @@
 
 `@Docs\Unity\HierarchyConvention.md`
 
+### 기술문서 작성 / 검수 시
+
+`@Docs\Documentation\TechDocRules.md` (양식 : `Docs\Template\TechDocTemplate.md`)
+
+작성은 `tech-writer`, 구현 대조 검수는 `doc-verifier` 서브에이전트에 위임한다.
+
 ### Github Issue 관련
 
 Issue 권유/작성/등록은 `/github-issue` 스킬을 호출해 수행한다. (작성 규칙 원본 : `Docs\Documentation\GithubIssueRules.md`)

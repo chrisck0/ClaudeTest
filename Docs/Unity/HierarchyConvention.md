@@ -76,6 +76,7 @@ Player                  ← 루트: Rigidbody2D, Collider2D, 기본 로직
 
 ## 3. 이름 규칙
 - PascalCase를 쓰고 공백은 넣지 않는다. (`EnemySlime`, `MovingPlatform`)
+  - 직접 생성해 이름을 짓는 오브젝트에 적용한다. Unity가 기본으로 정한 이름(예 : `Main Camera`)은 예외로 한다.
 - `GameObject (1)`처럼 Unity가 자동으로 붙인 이름은 그대로 두지 않는다.
 - 같은 종류가 여러 개면 `_01`, `_02`처럼 번호를 붙인다.
 
